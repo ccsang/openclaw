@@ -135,11 +135,11 @@ export async function appendStatusAllDiagnosis(params: {
     const backend = params.tailscale.backendState ?? "unknown";
     const okBackend = backend === "Running";
     const hasDns = Boolean(params.tailscale.dnsName);
-    const label =
-      params.tailscaleMode === "off"
-        ? `Tailscale: off · ${backend}${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`
-        : `Tailscale: ${params.tailscaleMode} · ${backend}${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`;
-    emitCheck(label, okBackend && (params.tailscaleMode === "off" || hasDns) ? "ok" : "warn");
+    const tailscaleOff = params.tailscaleMode === "off";
+    const label = tailscaleOff
+      ? `Tailscale: off${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`
+      : `Tailscale: ${params.tailscaleMode} · ${backend}${params.tailscale.dnsName ? ` · ${params.tailscale.dnsName}` : ""}`;
+    emitCheck(label, tailscaleOff || (okBackend && hasDns) ? "ok" : "warn");
     if (params.tailscale.error) {
       lines.push(`  ${muted(`error: ${params.tailscale.error}`)}`);
     }

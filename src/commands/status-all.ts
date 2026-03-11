@@ -57,6 +57,15 @@ export async function statusAllCommand(
     progress.setLabel("Checking Tailscale…");
     const tailscaleMode = cfg.gateway?.tailscale?.mode ?? "off";
     const tailscale = await (async () => {
+      if (tailscaleMode === "off") {
+        return {
+          ok: true as const,
+          backendState: "off",
+          dnsName: null,
+          ips: [] as string[],
+          error: null,
+        };
+      }
       try {
         const parsed = await readTailscaleStatusJson(runExec, {
           timeoutMs: 1200,
